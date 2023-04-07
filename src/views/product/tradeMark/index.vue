@@ -38,19 +38,19 @@
     >
     </el-pagination>
     <el-dialog title="添加品牌" :visible.sync="dialogFormVisible">
-      <el-form style="width: 80%">
+      <el-form style="width: 80%" :model="tmForm">
         <el-form-item label="品牌名称" :label-width="'100px'">
-          <el-input autocomplete="off"></el-input>
+          <el-input autocomplete="off" v-model="tmForm.tmName"></el-input>
         </el-form-item>
         <el-form-item label="品牌LOGO" :label-width="'100px'">
           <el-upload
             class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="/dev-api/admin/product/fileUpload"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
           >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <img v-if="tmForm.logoUrl" :src="tmForm.logoUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
@@ -76,7 +76,10 @@ export default {
       total: 0,
       list: [],
       dialogFormVisible: false,
-      imageUrl:''
+      tmForm:{
+        tmName:'',
+        logoUrl:''
+      }
     };
   },
   mounted() {
@@ -103,7 +106,7 @@ export default {
       this.dialogFormVisible = true;
     },
     handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+      this.tmForm.logoUrl = res.data
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
