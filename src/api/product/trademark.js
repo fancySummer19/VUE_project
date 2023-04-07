@@ -6,10 +6,13 @@ export const reqTradeMarkList = (page,limit) => request({url:`/admin/product/bas
 
 //处理添加品牌/admin/product/baseTrademark/save
 //修改品牌的地址/admin/product/baseTrademark/update
-export const reqAddOrUpdateTradeMArk = (tradeMArk)=>{
+export const reqAddOrUpdateTradeMark = (tradeMArk)=>{
     if(tradeMArk.id){
         return request({url:'/admin/product/baseTrademark/update',method:'put',data:tradeMArk})
     }else {
         return request({url:'/admin/product/baseTrademark/save',method:'post',data:tradeMArk})
     }
 }
+
+//删除品牌
+export const reqDeleteTradeMark = (id) => request({url:`/admin/product/baseTrademark/remove/${id}`,method:'delete'})
