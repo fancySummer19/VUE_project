@@ -58,7 +58,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false"
+        <el-button type="primary" @click="dialogFormVisible = false" 
           >确 定</el-button
         >
       </div>
@@ -101,6 +101,7 @@ export default {
     },
     showDailog() {
       this.dialogFormVisible = true;
+      this.tmForm = {tmName:'',logoUrl:''}
     },
     updateTradeMark() {
       this.dialogFormVisible = true;
