@@ -32,7 +32,7 @@
       <el-form-item label="三级分类">
         <el-select
           placeholder="请输入"
-          v-model="cForm.category2Id"
+          v-model="cForm.category3Id"
           @change="handler3"
         >
           <el-option
@@ -79,6 +79,7 @@ export default {
       this.cForm.category2Id = "";
       this.cForm.category3Id = "";
       const { category1Id } = this.cForm;
+      this.$emit('getCategoryId',{categoryId:category1Id,level:1})
       let result = await this.$API.attr.reqCategory2List(category1Id);
       if (result.code == 200) {
         this.list2 = result.data;
@@ -88,12 +89,16 @@ export default {
       this.list3 = [];
       this.cForm.category3Id = "";
       const { category2Id } = this.cForm;
+      this.$emit('getCategoryId',{categoryId:category2Id,level:2})
       let result = await this.$API.attr.reqCategory3List(category2Id);
       if (result.code == 200) {
         this.list3 = result.data;
       }
     },
-    handler3() {},
+    handler3() {
+        const {category3Id} = this.cForm
+      this.$emit('getCategoryId',{categoryId:category3Id,level:3})
+    },
   },
 };
 </script>
