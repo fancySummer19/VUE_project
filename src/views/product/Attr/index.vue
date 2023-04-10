@@ -70,7 +70,7 @@
           <el-table-column align="center" type="index" label="序号" width="80">
           </el-table-column>
           <el-table-column prop="prop" label="属性名称" width="width">
-            <template slot-scope="{ row }">
+            <template slot-scope="{ row, $index }">
               <el-input
                 v-model="row.valueName"
                 placeholder="输入属性值名称"
@@ -78,21 +78,27 @@
                 v-if="row.flag"
                 @blur="toLook(row)"
                 @keyup.native.enter="toLook(row)"
+                :ref="$index"
               ></el-input>
-              <span v-else @click="row.flag=true" style="display:block">{{ row.valueName}}</span>
+              <span v-else @click="toEdit(row)" style="display: block">{{
+                row.valueName
+              }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="prop" label="操作" width="width">
-            <template slot-scope="{ row }">
-              <el-button
-                type="danger"
-                size="mini"
-                icon="el-icon-delete"
-              ></el-button>
+            <template slot-scope="{ row ,$index}">
+              <el-popconfirm :title="`确定要删除${row.valueName}}`" @onConfirm="deleteAttrValue($index)">
+                <el-button
+                  type="danger"
+                  size="mini"
+                  icon="el-icon-delete"
+                  slot="reference"
+                ></el-button>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
-        <el-button type="primary">保存</el-button>
+        <el-button type="primary" @click="addOrUpdateAttr">保存</el-button>
         <el-button @click="isShowTable = true">取消</el-button>
       </div>
     </el-card>
@@ -100,7 +106,7 @@
 </template>
 
 <script>
-import cloneDeep from 'lodash/cloneDeep'
+import cloneDeep from "lodash/cloneDeep";
 export default {
   name: "attr",
   data() {
@@ -147,7 +153,10 @@ export default {
       this.attrInfo.attrValueList.push({
         attrId: this.attrInfo.id,
         valueName: "",
-        flag:true,
+        flag: true,
+      });
+      this.$nextTick(() => {
+        this.$refs[this.attrInfo.attrValueList.length - 1].focus();
       });
     },
     addAttr() {
@@ -159,12 +168,50 @@ export default {
         categoryLevel: 3,
       };
     },
-    updateAttr(row){
-      this.isShowTable = false
-      this.attrInfo = cloneDeep(row)
+    updateAttr(row) {
+      this.isShowTable = false;
+      this.attrInfo = cloneDeep(row);
+      this.attrInfo.attrValueList.forEach((item) => {
+        this.$set(item, "flag", false);
+      });
     },
-    toLook(row){
-      row.flag = false
+    toLook(row) {
+      if (row.valueName.trim() == "") {
+        this.$message("名称不能为空");
+        return;
+      }
+      let isRepeat = this.attrInfo.attrValueList.some((item) => {
+        if (row != item) {
+          return row.valueName == item.valueName;
+        }
+      });
+      if (isRepeat) return;
+      row.flag = false;
+    },
+    toEdit(row) {
+      row.flag = true;
+      this.$nextTick(() => {
+        this.$refs[index].focus();
+      });
+    },
+    deleteAttrValue(index){
+      this.attrInfo.attrValueList.splice(index,1)
+    },
+    async addOrUpdateAttr(){
+      this.attrInfo.attrValueList = this.attrInfo.attrValueList.filter(item=>{
+        if(item.valueName!=''){
+          delete item.flag
+          return true
+        }
+      })
+      try {
+        await this.$API.attr.reqAddOrUpdateAttr(this.attrInfo)
+        this.isShowTable = true
+        this.$message({type:'success',message:'保存成功'})
+        this.getAttrList()
+      } catch (error) {
+        
+      }
     }
   },
 };
