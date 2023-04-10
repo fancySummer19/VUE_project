@@ -34,7 +34,7 @@
                 type="warning"
                 icon="el-icon-edit"
                 size="mini"
-                @click="isShowTable = false"
+                @click="updateAttr(row)"
               ></el-button>
               <el-button
                 type="danger"
@@ -75,7 +75,11 @@
                 v-model="row.valueName"
                 placeholder="输入属性值名称"
                 size="mini"
+                v-if="row.flag"
+                @blur="toLook(row)"
+                @keyup.native.enter="toLook(row)"
               ></el-input>
+              <span v-else @click="row.flag=true" style="display:block">{{ row.valueName}}</span>
             </template>
           </el-table-column>
           <el-table-column prop="prop" label="操作" width="width">
@@ -96,6 +100,7 @@
 </template>
 
 <script>
+import cloneDeep from 'lodash/cloneDeep'
 export default {
   name: "attr",
   data() {
@@ -140,8 +145,9 @@ export default {
     },
     addAttrValue() {
       this.attrInfo.attrValueList.push({
-        attrId: undefined,
+        attrId: this.attrInfo.id,
         valueName: "",
+        flag:true,
       });
     },
     addAttr() {
@@ -153,6 +159,13 @@ export default {
         categoryLevel: 3,
       };
     },
+    updateAttr(row){
+      this.isShowTable = false
+      this.attrInfo = cloneDeep(row)
+    },
+    toLook(row){
+      row.flag = false
+    }
   },
 };
 </script>
