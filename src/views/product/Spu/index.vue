@@ -7,8 +7,14 @@
       ></CategorySelect>
     </el-card>
     <el-card>
-      <div>
-        <el-button type="primary" icon="el-icon-plus">添加SPU</el-button>
+      <div v-show="scene == 0">
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          :disabled="!category3Id"
+          @click="addSpu"
+          >添加SPU</el-button
+        >
         <el-table style="width: 100%" border="" :data="records">
           <el-table-column
             type="index"
@@ -17,7 +23,8 @@
             align="center"
           ></el-table-column>
           <el-table-column prop="spuName" label="SPU名称"> </el-table-column>
-          <el-table-column prop="description" label="SPU描述"> </el-table-column>
+          <el-table-column prop="description" label="SPU描述">
+          </el-table-column>
           <el-table-column prop="prop" label="操作">
             <template slot-scope="{ row }">
               <hint-button
@@ -25,14 +32,13 @@
                 icon="el-icon-plus"
                 size="mini"
                 title="添加spu"
-
               ></hint-button>
               <el-button
                 type="warning"
                 icon="el-icon-edit"
                 size="mini"
                 title="修改spu"
-
+                @click="updateSpu(row)"
               ></el-button>
               <el-button
                 type="info"
@@ -63,11 +69,15 @@
         >
         </el-pagination>
       </div>
+      <SpuForm v-show="scene == 1" @changeScene="changeScene" ref="spu"></SpuForm>
+      <SkuForm v-show="scene == 2"></SkuForm>
     </el-card>
   </div>
 </template>
 
 <script>
+import SpuForm from "./SpuForm";
+import SkuForm from "./SkuForm";
 export default {
   name: "Spu",
   data() {
@@ -76,10 +86,11 @@ export default {
       category2Id: "",
       category3Id: "",
       show: true,
-      page:1,
-      limit:3,
-      records:[],
-      total:0
+      page: 1,
+      limit: 3,
+      records: [],
+      total: 0,
+      scene: 0,
     };
   },
   methods: {
@@ -96,20 +107,31 @@ export default {
         this.getSpuList();
       }
     },
-    async getSpuList(pages =1) {
-      this.page = pages
-      const {page,limit,category3Id} = this
-      let result = await this.$API.spu.reqSpuList(page,limit,category3Id)
-      if(result.code == 200) {
-        this.total = result.data.total
-        this.records = result.data.records
+    async getSpuList(pages = 1) {
+      this.page = pages;
+      const { page, limit, category3Id } = this;
+      let result = await this.$API.spu.reqSpuList(page, limit, category3Id);
+      if (result.code == 200) {
+        this.total = result.data.total;
+        this.records = result.data.records;
       }
     },
-    handleSizeChange(limit){
-      this.limit = limit
-      this.getSpuList()
+    handleSizeChange(limit) {
+      this.limit = limit;
+      this.getSpuList();
+    },
+    addSpu() { 
+      this.scene = 1;
+    },
+    updateSpu(row) {
+      this.scene = 1;
+      this.$refs.spu.initSpuDate(row)
+    },
+    changeScene(scene){
+      this.scene = scene
     }
   },
+  components: { SpuForm, SkuForm },
 };
 </script>
 
