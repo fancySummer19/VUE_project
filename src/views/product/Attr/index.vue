@@ -1,7 +1,10 @@
 <template>
   <div>
     <el-card style="margin: 20px 0px"
-      ><CategorySelect @getCategoryId="getCategoryId" :show="!isShowTable"></CategorySelect>
+      ><CategorySelect
+        @getCategoryId="getCategoryId"
+        :show="!isShowTable"
+      ></CategorySelect>
     </el-card>
     <el-card>
       <div v-show="isShowTable">
@@ -86,8 +89,11 @@
             </template>
           </el-table-column>
           <el-table-column prop="prop" label="操作" width="width">
-            <template slot-scope="{ row ,$index}">
-              <el-popconfirm :title="`确定要删除${row.valueName}}`" @onConfirm="deleteAttrValue($index)">
+            <template slot-scope="{ row, $index }">
+              <el-popconfirm
+                :title="`确定要删除${row.valueName}}`"
+                @onConfirm="deleteAttrValue($index)"
+              >
                 <el-button
                   type="danger"
                   size="mini"
@@ -98,7 +104,12 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-button type="primary" @click="addOrUpdateAttr" :disabled="attrInfo.attrValueList.length<1">保存</el-button>
+        <el-button
+          type="primary"
+          @click="addOrUpdateAttr"
+          :disabled="attrInfo.attrValueList.length < 1"
+          >保存</el-button
+        >
         <el-button @click="isShowTable = true">取消</el-button>
       </div>
     </el-card>
@@ -194,25 +205,25 @@ export default {
         this.$refs[index].focus();
       });
     },
-    deleteAttrValue(index){
-      this.attrInfo.attrValueList.splice(index,1)
+    deleteAttrValue(index) {
+      this.attrInfo.attrValueList.splice(index, 1);
     },
-    async addOrUpdateAttr(){
-      this.attrInfo.attrValueList = this.attrInfo.attrValueList.filter(item=>{
-        if(item.valueName!=''){
-          delete item.flag
-          return true
+    async addOrUpdateAttr() {
+      this.attrInfo.attrValueList = this.attrInfo.attrValueList.filter(
+        (item) => {
+          if (item.valueName != "") {
+            delete item.flag;
+            return true;
+          }
         }
-      })
+      );
       try {
-        await this.$API.attr.reqAddOrUpdateAttr(this.attrInfo)
-        this.isShowTable = true
-        this.$message({type:'success',message:'保存成功'})
-        this.getAttrList()
-      } catch (error) {
-        
-      }
-    }
+        await this.$API.attr.reqAddOrUpdateAttr(this.attrInfo);
+        this.isShowTable = true;
+        this.$message({ type: "success", message: "保存成功" });
+        this.getAttrList();
+      } catch (error) {}
+    },
   },
 };
 </script>
