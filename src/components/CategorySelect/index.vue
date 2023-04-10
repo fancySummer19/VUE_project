@@ -6,6 +6,7 @@
           placeholder="请输入"
           v-model="cForm.category1Id"
           @change="handler1"
+          :disabled='show'
         >
           <el-option
             :label="c1.name"
@@ -20,6 +21,7 @@
           placeholder="请输入"
           v-model="cForm.category2Id"
           @change="handler2"
+          :disabled='show'
         >
           <el-option
             :label="c2.name"
@@ -34,6 +36,7 @@
           placeholder="请输入"
           v-model="cForm.category3Id"
           @change="handler3"
+          :disabled='show'
         >
           <el-option
             :label="c3.name"
@@ -66,6 +69,7 @@ export default {
   mounted() {
     this.getCategory1List();
   },
+  props:['show'],
   methods: {
     async getCategory1List() {
       let result = await this.$API.attr.reqCategory1List();
