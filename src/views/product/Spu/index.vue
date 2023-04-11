@@ -3,7 +3,7 @@
     <el-card style="margin: 20px 0px">
       <CategorySelect
         @getCategoryId="getCategoryId"
-        :show="!show"
+        :show="scene!=0"
       ></CategorySelect>
     </el-card>
     <el-card>
@@ -129,6 +129,7 @@ export default {
     },
     changeScene(scene){
       this.scene = scene
+      this.getSpuList(this.page)
     }
   },
   components: { SpuForm, SkuForm },
