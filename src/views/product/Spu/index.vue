@@ -31,7 +31,8 @@
                 type="success"
                 icon="el-icon-plus"
                 size="mini"
-                title="添加spu"
+                title="添加sku"
+                @click="addSku(row)"
               ></hint-button>
               <el-button
                 type="warning"
@@ -150,6 +151,9 @@ export default {
         this.getSpuList(this.records.length>1?history.page:this.page-1)
       }
     },
+    addSku(){
+      this.scene =2 
+    }
   },
   components: { SpuForm, SkuForm },
 };
