@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-form ref="form" label-width="80px">
+    <el-form ref="form" label-width="80px" :model="spu">
       <el-form-item label="SPU名称">
-        <el-input placeholder="SPU名称"></el-input>
+        <el-input placeholder="SPU名称" v-model="spu.spuName"></el-input>
       </el-form-item>
       <el-form-item label="品牌">
         <el-select placeholder="请选择品牌" value="">
@@ -59,7 +59,9 @@ export default {
       dialogImageUrl: "",
       dialogVisible: false,
       spu:{},
-      tradeMarkList:[]
+      tradeMarkList:[],
+      spuImageList:[],
+      saleAttrList:[]
     };
   },
   methods: {
@@ -77,9 +79,18 @@ export default {
         }
 
         let tardeMarkResult = await this.$API.spu.reqTradeMarkList()
-        console.log(this.tardeMarkResult);
         if(tardeMarkResult.code ==200){
             this.tradeMarkList = tardeMarkResult.data
+        }
+
+        let spuImageResult = await this.$API.spu.reqSpuImageList(spu.id)
+        if(spuImageResult.code == 200) {
+            this.spuImageList = spuImageResult.data
+        }
+
+        let saleResult = await this.$API.spu.reqBaseSaleAttrList()
+        if(saleResult.code == 200) {
+            this.saleAttrList = saleResult.data
         }
     }
   },
