@@ -3,7 +3,7 @@
     <el-card style="margin: 20px 0px">
       <CategorySelect
         @getCategoryId="getCategoryId"
-        :show="scene!=0"
+        :show="scene != 0"
       ></CategorySelect>
     </el-card>
     <el-card>
@@ -12,7 +12,7 @@
           type="primary"
           icon="el-icon-plus"
           :disabled="!category3Id"
-          @click="addSpu"
+          @click="addSpu()"
           >添加SPU</el-button
         >
         <el-table style="width: 100%" border="" :data="records">
@@ -46,12 +46,15 @@
                 size="mini"
                 title="查看当前spu的全部sku"
               ></el-button>
-              <el-button
-                type="danger"
-                icon="el-icon-delete"
-                size="mini"
-                title="删除spu"
-              ></el-button>
+              <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="deleteSpu(row)">
+                <el-button
+                  type="danger"
+                  icon="el-icon-delete"
+                  size="mini"
+                  title="删除spu"
+                  slot="reference"
+                ></el-button>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -69,7 +72,11 @@
         >
         </el-pagination>
       </div>
-      <SpuForm v-show="scene == 1" @changeScene="changeScene" ref="spu"></SpuForm>
+      <SpuForm
+        v-show="scene == 1"
+        @changeScene="changeScene"
+        ref="spu"
+      ></SpuForm>
       <SkuForm v-show="scene == 2"></SkuForm>
     </el-card>
   </div>
@@ -120,17 +127,29 @@ export default {
       this.limit = limit;
       this.getSpuList();
     },
-    addSpu() { 
+    addSpu() {
       this.scene = 1;
+      this.$refs.spu.addSpuDate(this.category3Id);
     },
     updateSpu(row) {
       this.scene = 1;
-      this.$refs.spu.initSpuDate(row)
+      this.$refs.spu.initSpuDate(row);
     },
-    changeScene(scene){
-      this.scene = scene
-      this.getSpuList(this.page)
-    }
+    changeScene({ scene, flag }) {
+      this.scene = scene;
+      if (flag == "修改") {
+        this.getSpuList(this.page);
+      } else {
+        this.getSpuList();
+      }
+    },
+    async deleteSpu(row) {
+      let result = await this.$API.spu.reqDeleteSpu(row.id)
+      if(result.code == 200){
+        this.$message({type:'success',message:'删除成功'})
+        this.getSpuList(this.records.length>1?history.page:this.page-1)
+      }
+    },
   },
   components: { SpuForm, SkuForm },
 };

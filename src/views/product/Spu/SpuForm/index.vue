@@ -49,7 +49,11 @@
             :key="unselect.id"
           ></el-option>
         </el-select>
-        <el-button type="primary" icon="el-icon-plus" :disabled="!attrIdAndAttrName" @click="addSaleAttr"
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          :disabled="!attrIdAndAttrName"
+          @click="addSaleAttr"
           >添加销售属性</el-button
         >
         <el-table style="width: 100%" :data="spu.spuSaleAttrList">
@@ -66,10 +70,10 @@
             <template slot-scope="{ row }">
               <el-tag
                 :key="tag.id"
-                v-for="(tag,index) in row.spuSaleAttrValueList"
+                v-for="(tag, index) in row.spuSaleAttrValueList"
                 closable
                 :disable-transitions="false"
-                @close="row.spuSaleAttrValueList.splice(index,1)"
+                @close="row.spuSaleAttrValueList.splice(index, 1)"
               >
                 {{ tag.saleAttrValueName }}
               </el-tag>
@@ -93,12 +97,12 @@
             </template>
           </el-table-column>
           <el-table-column prop="prop" label="操作" width="width">
-            <template slot-scope="{$index}">
+            <template slot-scope="{ $index }">
               <el-button
                 type="danger"
                 icon="el-icon-delete"
                 size="mini"
-                @click="spu.spuSaleAttrList.splice($index,1)"
+                @click="spu.spuSaleAttrList.splice($index, 1)"
               ></el-button>
             </template>
           </el-table-column>
@@ -106,14 +110,13 @@
       </el-form-item>
       <el-form-item label="label">
         <el-button type="primary" @click="addOrUpdateSpu">保存</el-button>
-        <el-button @click="$emit('changeScene', 0)">取消</el-button>
+        <el-button @click="cancel">取消</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
-
 export default {
   name: "SpuForm",
   data() {
@@ -124,7 +127,7 @@ export default {
         category3Id: 0,
         description: "",
         tmId: 0,
-        spuName: "strng",
+        spuName: "",
         spuImageList: [
           //   {
           //     imgName: "string",
@@ -195,44 +198,70 @@ export default {
     handlerSuccess(response, file, fileList) {
       this.spuImageList = fileList;
     },
-    addSaleAttr(){
-        const [baseSaleAttrId,saleAttrName] = this.attrIdAndAttrName.split(':')
-        let newSaleAttr = {baseSaleAttrId,saleAttrName,spuSaleAttrValueList:[]}
-        this.spu.spuSaleAttrList.push(newSaleAttr)
-        this.attrIdAndAttrName = ''
+    addSaleAttr() {
+      const [baseSaleAttrId, saleAttrName] = this.attrIdAndAttrName.split(":");
+      let newSaleAttr = {
+        baseSaleAttrId,
+        saleAttrName,
+        spuSaleAttrValueList: [],
+      };
+      this.spu.spuSaleAttrList.push(newSaleAttr);
+      this.attrIdAndAttrName = "";
     },
-    addSaleAttrValue(row){
-        this.$set(row,'inputVisible',true)
-        this.$set(row,'inputValue','')
+    addSaleAttrValue(row) {
+      this.$set(row, "inputVisible", true);
+      this.$set(row, "inputValue", "");
     },
-    handleInputConfirm(row){
-        const {baseSaleAttrId,inputValue} = row
-        if(inputValue.trim() == "") {
-            this.$message('属性值不能为空')
-            return 
-        }
-        let result = row.spuSaleAttrValueList.every(item=>item.saleAttrValueName!=inputValue)
-        if(!result) return
+    handleInputConfirm(row) {
+      const { baseSaleAttrId, inputValue } = row;
+      if (inputValue.trim() == "") {
+        this.$message("属性值不能为空");
+        return;
+      }
+      let result = row.spuSaleAttrValueList.every(
+        (item) => item.saleAttrValueName != inputValue
+      );
+      if (!result) return;
 
-        let newSaleAttrValue = {baseSaleAttrId,saleAttrValueName:inputValue}
-        row.spuSaleAttrValueList.push(newSaleAttrValue)
+      let newSaleAttrValue = { baseSaleAttrId, saleAttrValueName: inputValue };
+      row.spuSaleAttrValueList.push(newSaleAttrValue);
 
-        row.inputVisible = false
-        
+      row.inputVisible = false;
     },
-    async addOrUpdateSpu(){
-        this.spu.spuImageList = this.spuImageList.map((item) => {
-            return {
-                imageName:item.name,
-                imageUrl:(item.response&&item.response.data)||item.url
-            }
-        })
-        let result = await this.$API.spu.reqAddOrUpdateSpu(this.spu)
-        if(result.code == 200) {
-            this.$message({type:'success',message:'保存成功'})
-            this.$emit('changeScene',0)
-        }
-    }
+    async addOrUpdateSpu() {
+      this.spu.spuImageList = this.spuImageList.map((item) => {
+        return {
+          imageName: item.name,
+          imageUrl: (item.response && item.response.data) || item.url,
+        };
+      });
+      let result = await this.$API.spu.reqAddOrUpdateSpu(this.spu);
+      if (result.code == 200) {
+        this.$message({ type: "success", message: "保存成功" });
+        this.$emit("changeScene", {
+          scene: 0,
+          flag: this.spu.id ? "修改" : "添加",
+        });
+      }
+      Object.assign(this._data,this.$options.data())
+
+    },
+    async addSpuDate(category3Id) {
+      this.spu.category3Id = category3Id;
+      let tardeMarkResult = await this.$API.spu.reqTradeMarkList();
+      if (tardeMarkResult.code == 200) {
+        this.tradeMarkList = tardeMarkResult.data;
+      }
+
+      let saleResult = await this.$API.spu.reqBaseSaleAttrList();
+      if (saleResult.code == 200) {
+        this.saleAttrList = saleResult.data;
+      }
+    },
+    cancel() {
+      this.$emit("changeScene", { scene: 0, flag: "" });
+      Object.assign(this._data,this.$options.data())
+    },
   },
   computed: {
     unSelectSaleAttr() {
