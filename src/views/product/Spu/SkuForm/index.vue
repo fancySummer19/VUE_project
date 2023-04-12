@@ -47,7 +47,38 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name:'Sku',
+  data() {
+    return {
+      spuImageList:[],
+      spuSaleAttrList:[],
+      attrInfoList:[]
+    }
+  },
+  methods:{
+    async getData(category1Id,category2Id,spu){
+      let result = await this.$API.sku.reqSpuImageList(spu.id)
+      if(result.code == 200){
+        this.spuImageList = result.data
+      }
+
+      let result1 = await this.$API.sku.reqSpuSaleAttrList(spu.id)
+      if(result1.code == 200){
+        this.spuSaleAttrList = result1.data
+      }
+    
+
+    let result2 = await this.$API.sku.reqAttrInfoList(category1Id,category2Id,spu.category3Id)
+    console.log(result2);
+      if(result2.code == 200){
+        this.attrInfoList = result2.data
+      }
+    }
+  
+    
+  }
+};
 </script>
 
 <style>

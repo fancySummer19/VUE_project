@@ -78,7 +78,7 @@
         @changeScene="changeScene"
         ref="spu"
       ></SpuForm>
-      <SkuForm v-show="scene == 2"></SkuForm>
+      <SkuForm v-show="scene == 2" ref="sku"></SkuForm>
     </el-card>
   </div>
 </template>
@@ -151,8 +151,9 @@ export default {
         this.getSpuList(this.records.length>1?history.page:this.page-1)
       }
     },
-    addSku(){
+    addSku(row){
       this.scene =2 
+      this.$refs.sku.getData(this.category1Id,this.category2Id,row)
     }
   },
   components: { SpuForm, SkuForm },
