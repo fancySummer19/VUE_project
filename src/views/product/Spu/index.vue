@@ -46,8 +46,12 @@
                 icon="el-icon-info"
                 size="mini"
                 title="查看当前spu的全部sku"
+                @click="handler(row)"
               ></el-button>
-              <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="deleteSpu(row)">
+              <el-popconfirm
+                title="这是一段内容确定删除吗？"
+                @onConfirm="deleteSpu(row)"
+              >
                 <el-button
                   type="danger"
                   icon="el-icon-delete"
@@ -78,8 +82,27 @@
         @changeScene="changeScene"
         ref="spu"
       ></SpuForm>
-      <SkuForm v-show="scene == 2" ref="sku" @changeScene="changeScene"></SkuForm>
+      <SkuForm
+        v-show="scene == 2"
+        ref="sku"
+        @changeScene="changeScene"
+      ></SkuForm>
     </el-card>
+    <el-dialog
+      :title="`${spu.spuName}的sku列表`"
+      :visible.sync="dialogTableVisible"
+    >
+      <el-table :data="skuList" border="">
+        <el-table-column prop="skuName" label="名称"> </el-table-column>
+        <el-table-column prop="price" label="价格"> </el-table-column>
+        <el-table-column prop="weight" label="重量"> </el-table-column>
+        <el-table-column label="默认图片">
+          <template slot-scope="{row}">
+            <img :src="row.skuDefaultImg" alt="" style="width:100px;height:100px">
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -99,6 +122,9 @@ export default {
       records: [],
       total: 0,
       scene: 0,
+      dialogTableVisible: false,
+      spu: {},
+      skuList: [],
     };
   },
   methods: {
@@ -145,19 +171,27 @@ export default {
       }
     },
     async deleteSpu(row) {
-      let result = await this.$API.spu.reqDeleteSpu(row.id)
-      if(result.code == 200){
-        this.$message({type:'success',message:'删除成功'})
-        this.getSpuList(this.records.length>1?history.page:this.page-1)
+      let result = await this.$API.spu.reqDeleteSpu(row.id);
+      if (result.code == 200) {
+        this.$message({ type: "success", message: "删除成功" });
+        this.getSpuList(this.records.length > 1 ? history.page : this.page - 1);
       }
     },
-    addSku(row){
-      this.scene =2 
-      this.$refs.sku.getData(this.category1Id,this.category2Id,row)
+    addSku(row) {
+      this.scene = 2;
+      this.$refs.sku.getData(this.category1Id, this.category2Id, row);
     },
-    changeScene(scene){
-      this.scene = scene
-    }
+    changeScene(scene) {
+      this.scene = scene;
+    },
+    async handler(spu) {
+      this.dialogTableVisible = true;
+      this.spu = spu;
+      let result = await this.$API.spu.reqSkuList(spu.id);
+      if (result.code == 200) {
+        this.skuList = result.data;
+      }
+    },
   },
   components: { SpuForm, SkuForm },
 };
