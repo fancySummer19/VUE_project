@@ -81,7 +81,7 @@
       <el-row>
         <el-col :span="5">平台属性</el-col>
         <el-col :span="16"
-          > 
+          >  
             <el-tag
               type="success"
               v-for="attr in skuInfo.skuAttrValueList"
