@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card></Card>
-    <Sale/>
+    <Sale></Sale>
   </div>
 </template>
 
