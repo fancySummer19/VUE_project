@@ -4,9 +4,9 @@
         <span>{{title}}</span>
         <i class="el-icon-info"></i>
     </div>
-    <div class="card-content">12306</div>
+    <div class="card-content">{{count}}</div>
     <div class="card-charts">
-        <slot name="cahrts">
+        <slot name="charts">
         </slot>
     </div>
     <div class="card-footer">
@@ -20,7 +20,7 @@
 <script>
 export default {
     name:'Detail',
-    props:['title']
+    props:['title','count']
 }
 </script>
 
@@ -39,5 +39,6 @@ export default {
     }
     .card-footer {
         border-top: 1px solid #eee;
+        padding-top: 10px;
     }
 </style>
