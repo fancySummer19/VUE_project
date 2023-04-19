@@ -34,7 +34,7 @@
 
 <script>
 import * as echarts from "echarts";
-import dayjs from 'dayjs'
+import dayjs from 'dayjs' 
 
 export default {
   name: "Sale",
