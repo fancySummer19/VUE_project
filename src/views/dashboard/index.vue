@@ -16,7 +16,7 @@ export default {
     Sale
   }
 }
-</script>
+</script> 
 
 <style scoped>
 
